@@ -25,10 +25,10 @@ void ofApp::sendStart() {
 		str = client.receive();
 		ofxJSONElement element = new ofxJSONElement();
 		if (element.parse(str)) {
-			if (element["Status"].asString() == "OK") {
+			if (element["STATUS"].asString() == "OK") {
 				started = true;
 			}
-			else if (element["Status"].asString() == "Error") {
+			else if (element["STATUS"].asString() == "Error") {
 				ofLogError(element["MSG"].asString());
 			}
 		}
@@ -46,10 +46,10 @@ void ofApp::sendStop() {
 		str = client.receive();
 		ofxJSONElement element = new ofxJSONElement();
 		if (element.parse(str)) {
-			if (element["Status"].asString() == "OK") {
-				started = true;
+			if (element["STATUS"].asString() == "OK") {
+				started = false;
 			}
-			else if (element["Status"].asString() == "Error") {
+			else if (element["STATUS"].asString() == "Error") {
 				ofLogError(element["MSG"].asString());
 			}
 		}
