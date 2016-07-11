@@ -16,5 +16,6 @@ public:
 		
 	ofxTCPClient client;
 	ofxJSONElement json;
-	bool started;
+	bool started;	
+
 };

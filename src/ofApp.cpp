@@ -10,8 +10,34 @@ void ofApp::setup(){
 void ofApp::update(){
 	if (client.isConnected()) {
 		string str = client.receive();
+		ofxJSONElement element = new ofxJSONElement();
+
+		if (element.parse(str) && started) {
+			for (Json::ArrayIndex i = 0; i < element["DATA"].size(); i++) {				
+				
+				//get element at index i
+				ofxJSONElement sub = element["DATA"][i];
+
+				//display value type and timestamp
+				cout << "received " << sub["ID"] << "at " << sub["Timestamp"] << " ";
+
+				//display values separated by comma
+				for (int j = 0; j<element["DATA"]["Values"].size(); j++) {
+					cout << sub["Values"][j].asFloat() << ", ";
+				}
+
+				//end line
+				cout << endl;
+			}				
+		}
+			
+	}
+	else {
+
 	}
 }
+
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -20,7 +46,7 @@ void ofApp::draw(){
 
 void ofApp::sendStart() {
 	if (client.isConnected()) {
-		string str = "{ \"COMMAND\": \"start\" }";
+		string str = "{ \"COMMAND\": \"start\", }";
 		client.send(str);
 		str = client.receive();
 		ofxJSONElement element = new ofxJSONElement();
@@ -41,7 +67,7 @@ void ofApp::sendStart() {
 
 void ofApp::sendStop() {
 	if (client.isConnected()) {
-		string str = "{ COMMAND: \"stop\" }";
+		string str = "{ COMMAND: \"stop\", }";
 		client.send(str);
 		str = client.receive();
 		ofxJSONElement element = new ofxJSONElement();
