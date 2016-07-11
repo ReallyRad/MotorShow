@@ -2,17 +2,20 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	client.setup("127.0.0.1", 5555);
+	client.setMessageDelimiter("\n");
+	client.setup("192.168.1.33", 5555);
 	started = false;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	if (client.isConnected()) {
+				
 		string str = client.receive();
+		
 		ofxJSONElement element = new ofxJSONElement();
 
-		if (element.parse(str) && started) {
+		if (str!= "" && element.parse(str) && started) {
 			for (Json::ArrayIndex i = 0; i < element["DATA"].size(); i++) {				
 				
 				//get element at index i
@@ -43,52 +46,35 @@ void ofApp::draw(){
 
 }
 
-void ofApp::sendStart() {
+void ofApp::sendCommand(string command) {
 	if (client.isConnected()) {
-		//send start command to server
-		string str = "{ \"COMMAND\": \"start\", }";
-		client.send(str);
+		//send command to server
+		string s = "{ \"COMMAND\": \""+ command + "\" }";
+		client.send(s);		
 
-		//receive answer
-		str = client.receive();
-		ofxJSONElement element = new ofxJSONElement();
+		Sleep(1000);
+		s = client.receive();
+		ofxJSONElement element = new ofxJSONElement(s);
 
-		//if server answered
-		if (element.parse(str)) {
-			if (element["STATUS"].asString() == "OK") {				
-				
-				started = true;
+		if (element.parse(s)) {
+			if (element["STATUS"].asString() == "OK") {								
+				if (command == "start") started = true;
+				if (command == "stop") started = false;
+				cout << command << "request accepted." << endl;
 			}
 			else if (element["STATUS"].asString() == "Error") {
 				ofLogError(element["MSG"].asString());
 			}
 		}
 		else {
-			ofLogError("error reading answer from start request");
+			ofLogError("error reading answer from" + command + "request");
+			if (s == "") cout << "server returned empty messsage" << endl;
 		}
 
 	}
 }
 
-void ofApp::sendStop() {
-	if (client.isConnected()) {
-		string str = "{ COMMAND: \"stop\", }";
-		client.send(str);
-		str = client.receive();
-		ofxJSONElement element = new ofxJSONElement();
-		if (element.parse(str)) {
-			if (element["STATUS"].asString() == "OK") {
-				started = false;
-			}
-			else if (element["STATUS"].asString() == "Error") {
-				ofLogError(element["MSG"].asString());
-			}
-		}
-		else {
-			ofLogError("error parsing answer from stop request");
-		}
-
-	}
+void ofApp::keyPressed(int key) {
+	if (key == OF_KEY_UP) sendCommand("start");
+	if (key == OF_KEY_DOWN) sendCommand("stop");
 }
-
-

@@ -11,9 +11,9 @@ public:
 	void setup();
 	void update();
 	void draw();
-	void sendStart();
-	void sendStop();
-		
+	void sendCommand(string command);
+	void keyPressed(int key);
+	
 	ofxTCPClient client;
 	ofxJSONElement json;
 	bool started;	
