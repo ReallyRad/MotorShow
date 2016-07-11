@@ -19,7 +19,7 @@ void ofApp::update(){
 				ofxJSONElement sub = element["DATA"][i];
 
 				//display value type and timestamp
-				cout << "received " << sub["ID"] << "at " << sub["Timestamp"] << " ";
+				cout << "received " << sub["ID"].asString() << "at " << sub["Timestamp"].asFloat() << " ";
 
 				//display values separated by comma
 				for (int j = 0; j<element["DATA"]["Values"].size(); j++) {
@@ -38,7 +38,6 @@ void ofApp::update(){
 }
 
 
-
 //--------------------------------------------------------------
 void ofApp::draw(){
 
@@ -46,12 +45,18 @@ void ofApp::draw(){
 
 void ofApp::sendStart() {
 	if (client.isConnected()) {
+		//send start command to server
 		string str = "{ \"COMMAND\": \"start\", }";
 		client.send(str);
+
+		//receive answer
 		str = client.receive();
 		ofxJSONElement element = new ofxJSONElement();
+
+		//if server answered
 		if (element.parse(str)) {
-			if (element["STATUS"].asString() == "OK") {
+			if (element["STATUS"].asString() == "OK") {				
+				
 				started = true;
 			}
 			else if (element["STATUS"].asString() == "Error") {
