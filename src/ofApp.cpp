@@ -2,8 +2,10 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	client.setMessageDelimiter("\n");
+	//client.setMessageDelimiter("\TCP");
 	client.setup("192.168.1.33", 5555);
+	if (client.isConnected()) cout << "connected to server" << endl;
+	else cout << "connection failed" << endl;
 	started = false;
 }
 
@@ -22,13 +24,13 @@ void ofApp::update(){
 				ofxJSONElement sub = element["DATA"][i];
 
 				//display value type and timestamp
-				cout << "received " << sub["ID"].asString() << "at " << sub["Timestamp"].asFloat() << " ";
+				cout << "received " << sub["ID"].asString() << " at " << sub["Timestamp"].asFloat() << " ";
 
 				//display values separated by comma
-				for (int j = 0; j<element["DATA"]["Values"].size(); j++) {
+				/*for (int j = 0; j<sub["Values"].size(); j++) {
 					cout << sub["Values"][j].asFloat() << ", ";
 				}
-
+				*/
 				//end line
 				cout << endl;
 			}				
@@ -60,7 +62,7 @@ void ofApp::sendCommand(string command) {
 			if (element["STATUS"].asString() == "OK") {								
 				if (command == "start") started = true;
 				if (command == "stop") started = false;
-				cout << command << "request accepted." << endl;
+				cout << command << " request accepted." << endl;
 			}
 			else if (element["STATUS"].asString() == "Error") {
 				ofLogError(element["MSG"].asString());
