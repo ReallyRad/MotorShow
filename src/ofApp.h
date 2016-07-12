@@ -13,11 +13,18 @@ public:
 	void draw();
 	void sendCommand(string command);
 	void keyPressed(int key);
-	void eeg();
+	void fitEegData(ofxJSONElement element, float ** data);
+	void fitEdaData(ofxJSONElement element, float * data);
 	
 
 	ofxTCPClient client;
 	ofxJSONElement json;
 	bool started;	
-	float** eegData;
+
+	float * edaFasic;
+	float * edaTonic;
+
+	float ** eegAlpha;
+	float ** eegBeta;
+	float ** eegTheta;
 };

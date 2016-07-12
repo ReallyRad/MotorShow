@@ -16,6 +16,9 @@ void ofApp::setup(){
 		eegBeta[i] = new float[8];
 		eegTheta[i] = new float[8];
 	}
+
+	edaFasic = new float[8];
+	edaTonic = new float[8];
 }
 
 //--------------------------------------------------------------
@@ -41,6 +44,8 @@ void ofApp::update(){
 				if (sub["ID"].asString() == "eeg_theta") fitEegData(sub, eegTheta);
 				
 				//display eda values				
+				if (sub["ID"].asString() == "eda_tonic") fitEdaData(sub, edaFasic);
+				if (sub["ID"].asString() == "eda_fasic") fitEdaData(sub, edaTonic);
 				//display ecg values
 
 				//display values separated by comma
@@ -63,9 +68,15 @@ void ofApp::update(){
 void ofApp::fitEegData(ofxJSONElement e, float ** m) {
 	for (int i=0; i < 8; i++) {
 		for (int j = 0; i < 4; j++) {
-			eegAlpha[i][j] = e["Values"][4 * j + i].asFloat();
+			m[i][j] = e["Values"][4 * j + i].asFloat();
 		}		
 	}	
+}
+
+void ofApp::fitEdaData(ofxJSONElement e, float * d) {
+	for (int i = 0; i < 8; i++) {
+		d[i] = e["Values"][i].asFloat();
+	}
 }
 
 //--------------------------------------------------------------
