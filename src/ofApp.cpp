@@ -19,6 +19,8 @@ void ofApp::setup(){
 
 	edaFasic = new float[8];
 	edaTonic = new float[8];
+
+	ecg = 0;
 }
 
 //--------------------------------------------------------------
@@ -37,25 +39,22 @@ void ofApp::update(){
 
 				//display value type and timestamp
 				cout << "received " << sub["ID"].asString() << " at " << sub["Timestamp"].asFloat() << " ";
-
-				//fit eeg values				
-				if (sub["ID"].asString() == "eeg_alpha") fitEegData(sub, eegAlpha);
-				if (sub["ID"].asString() == "eeg_beta") fitEegData(sub, eegBeta);
-				if (sub["ID"].asString() == "eeg_theta") fitEegData(sub, eegTheta);
-				
-				//display eda values				
-				if (sub["ID"].asString() == "eda_tonic") fitEdaData(sub, edaFasic);
-				if (sub["ID"].asString() == "eda_fasic") fitEdaData(sub, edaTonic);
-				//display ecg values
-
-				//display values separated by comma
-				/*for (int j = 0; j<sub["Values"].size(); j++) {
-					cout << sub["Values"][j].asFloat() << ", ";
-				}
-				*/
 				
 				//end line
 				cout << endl;
+
+				//store eeg values				
+				if (sub["ID"].asString() == "eeg_alpha") fitEegData(sub, eegAlpha);
+				if (sub["ID"].asString() == "eeg_beta") fitEegData(sub, eegBeta);
+				if (sub["ID"].asString() == "eeg_theta") fitEegData(sub, eegTheta);
+
+				//store eda values				
+				if (sub["ID"].asString() == "eda_tonic") fitEdaData(sub, edaFasic);
+				if (sub["ID"].asString() == "eda_fasic") fitEdaData(sub, edaTonic);
+
+				//store ecg values
+				if (sub["ID"].asString() == "ecg_hr") ecg = sub["Values"].asFloat();
+
 			}				
 		}
 			
