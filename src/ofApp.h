@@ -27,4 +27,6 @@ public:
 	float ** eegAlpha;
 	float ** eegBeta;
 	float ** eegTheta;
+
+	float ecg;
 };

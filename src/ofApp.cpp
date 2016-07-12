@@ -81,6 +81,34 @@ void ofApp::fitEdaData(ofxJSONElement e, float * d) {
 //--------------------------------------------------------------
 void ofApp::draw(){
 
+		float hu = ofGetHeight()/10;
+		float wu = ofGetWidth()/13;
+
+		ofDrawBitmapString("alpha", wu, 2 * hu);
+		ofDrawBitmapString("beta", wu, 7 * hu);
+		ofDrawBitmapString("theta", 8 * wu, hu);
+
+		ofDrawBitmapString("EEG", 4 * wu, hu);
+		ofDrawBitmapString("EDA", 13 * wu, 6 * hu);
+		ofDrawBitmapString("ECG  ", 10 * wu, 9 * hu);
+				
+		ofDrawBitmapString("ch0", 2 * wu, 2 * hu);
+		ofDrawBitmapString("ch1", 2 * wu, 3 * hu);
+		ofDrawBitmapString("ch2", 2 * wu, 4 * hu);
+		ofDrawBitmapString("ch3", 2 * wu, 5 * hu);
+
+		ofDrawBitmapString("ch0", 2 * wu, 7 * hu);
+		ofDrawBitmapString("ch1", 2 * wu, 8 * hu);
+		ofDrawBitmapString("ch2", 2 * wu, 9 * hu);
+		ofDrawBitmapString("ch3", 2 * wu, 10 * hu);
+
+		ofDrawBitmapString("ch0", 8 * wu, 2 * hu);
+		ofDrawBitmapString("ch1", 8 * wu, 3 * hu);
+		ofDrawBitmapString("ch2", 8 * wu, 4 * hu);
+		ofDrawBitmapString("ch3", 8 * wu, 5 * hu);
+
+		ofDrawBitmapString("fasic", 8 * wu, 7 * hu);
+		ofDrawBitmapString("tonic", 8 * wu, 8 * hu);		
 }
 
 void ofApp::sendCommand(string command) {
