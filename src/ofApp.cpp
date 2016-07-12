@@ -66,7 +66,7 @@ void ofApp::update(){
 
 void ofApp::fitEegData(ofxJSONElement e, float ** m) {
 	for (int i=0; i < 8; i++) {
-		for (int j = 0; i < 4; j++) {
+		for (int j = 0; j < 4; j++) {
 			m[i][j] = e["Values"][4 * j + i].asFloat();
 		}		
 	}	
@@ -83,14 +83,15 @@ void ofApp::draw(){
 
 		float hu = ofGetHeight()/10;
 		float wu = ofGetWidth()/13;
+		int radius = 5;
 
 		ofDrawBitmapString("alpha", wu, 2 * hu);
 		ofDrawBitmapString("beta", wu, 7 * hu);
-		ofDrawBitmapString("theta", 8 * wu, hu);
+		ofDrawBitmapString("theta", 7 * wu, 2 * hu);
 
 		ofDrawBitmapString("EEG", 4 * wu, hu);
-		ofDrawBitmapString("EDA", 13 * wu, 6 * hu);
-		ofDrawBitmapString("ECG  ", 10 * wu, 9 * hu);
+		ofDrawBitmapString("EDA", 10 * wu, 6 * hu);
+		ofDrawBitmapString("ECG  ", 8 * wu, 9 * hu);
 				
 		ofDrawBitmapString("ch0", 2 * wu, 2 * hu);
 		ofDrawBitmapString("ch1", 2 * wu, 3 * hu);
@@ -109,6 +110,14 @@ void ofApp::draw(){
 
 		ofDrawBitmapString("fasic", 8 * wu, 7 * hu);
 		ofDrawBitmapString("tonic", 8 * wu, 8 * hu);		
+
+		ofPushMatrix();		
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 4; j++) {
+				ofCircle((i + 3)*wu, (j + 3) - eegAlpha[i][j] * hu, radius);
+			}
+		}		
+		ofPopMatrix();
 }
 
 void ofApp::sendCommand(string command) {
