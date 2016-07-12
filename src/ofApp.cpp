@@ -7,6 +7,15 @@ void ofApp::setup(){
 	if (client.isConnected()) cout << "connected to server" << endl;
 	else cout << "connection failed" << endl;
 	started = false;
+	eegAlpha = new float*[4];
+	eegBeta = new float*[4];
+	eegTheta = new float*[4];
+
+	for (int i = 0; i < 8; i++) {
+		eegAlpha[i] = new float[8];
+		eegBeta[i] = new float[8];
+		eegTheta[i] = new float[8];
+	}
 }
 
 //--------------------------------------------------------------
@@ -26,11 +35,20 @@ void ofApp::update(){
 				//display value type and timestamp
 				cout << "received " << sub["ID"].asString() << " at " << sub["Timestamp"].asFloat() << " ";
 
+				//fit eeg values				
+				if (sub["ID"].asString() == "eeg_alpha") fitEegData(sub, eegAlpha);
+				if (sub["ID"].asString() == "eeg_beta") fitEegData(sub, eegBeta);
+				if (sub["ID"].asString() == "eeg_theta") fitEegData(sub, eegTheta);
+				
+				//display eda values				
+				//display ecg values
+
 				//display values separated by comma
 				/*for (int j = 0; j<sub["Values"].size(); j++) {
 					cout << sub["Values"][j].asFloat() << ", ";
 				}
 				*/
+				
 				//end line
 				cout << endl;
 			}				
@@ -42,6 +60,13 @@ void ofApp::update(){
 	}
 }
 
+void ofApp::fitEegData(ofxJSONElement e, float ** m) {
+	for (int i=0; i < 8; i++) {
+		for (int j = 0; i < 4; j++) {
+			eegAlpha[i][j] = e["Values"][4 * j + i].asFloat();
+		}		
+	}	
+}
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -54,21 +79,25 @@ void ofApp::sendCommand(string command) {
 		string s = "{ \"COMMAND\": \""+ command + "\" }";
 		client.send(s);		
 
+		//wait for answer
 		Sleep(1000);
 		s = client.receive();
 		ofxJSONElement element = new ofxJSONElement(s);
 
 		if (element.parse(s)) {
 			if (element["STATUS"].asString() == "OK") {								
+				//if request accepted
 				if (command == "start") started = true;
 				if (command == "stop") started = false;
 				cout << command << " request accepted." << endl;
 			}
 			else if (element["STATUS"].asString() == "Error") {
+				//error in the server when receiving the message
 				ofLogError(element["MSG"].asString());
 			}
 		}
 		else {
+			//error parsing the server's answer
 			ofLogError("error reading answer from" + command + "request");
 			if (s == "") cout << "server returned empty messsage" << endl;
 		}

@@ -13,9 +13,11 @@ public:
 	void draw();
 	void sendCommand(string command);
 	void keyPressed(int key);
+	void eeg();
 	
+
 	ofxTCPClient client;
 	ofxJSONElement json;
 	bool started;	
-
+	float** eegData;
 };
