@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	//client.setMessageDelimiter("\TCP");
-	client.setup("127.0.0.1", 5555);
+	client.setup("192.168.1.81", 5555);
 	if (client.isConnected()) cout << "connected to server" << endl;
 	else cout << "connection failed" << endl;
 	started = false;
@@ -150,7 +150,7 @@ void ofApp::draw() {
 		for (int i = 0; i < 4; i++) {
 			vector<ofPoint> points;
 			for (int j = 0; j < 8; j++) {
-				ofPoint point = ofPoint(8 * wu + j*wu / 2, (i + 2)*hu - eegAlpha[j][i] * hu *0.7);
+				ofPoint point = ofPoint(9 * wu + j*wu / 2, (i + 2)*hu - eegAlpha[j][i] * hu *0.7);
 				points.push_back(point);
 				ofCircle(point, radius);
 			}
@@ -200,4 +200,8 @@ void ofApp::sendCommand(string command) {
 void ofApp::keyPressed(int key) {
 	if (key == OF_KEY_UP) sendCommand("start");
 	if (key == OF_KEY_DOWN) sendCommand("stop");
+}
+
+void ofApp::exit() {
+	sendCommand("stop");
 }

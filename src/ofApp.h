@@ -15,7 +15,7 @@ public:
 	void keyPressed(int key);
 	void fitEegData(ofxJSONElement element, float ** data);
 	void fitEdaData(ofxJSONElement element, float * data);
-	
+	void exit();
 
 	ofxTCPClient client;
 	ofxJSONElement json;
