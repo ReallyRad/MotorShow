@@ -114,7 +114,7 @@ void ofApp::draw() {
 	if (client.isConnected()) {
 		ofPushMatrix();
 
-		//draw alpha
+		//draw eeg alpha
 		for (int i = 0; i < 4; i++) {
 			vector<ofPoint> points;
 			for (int j = 0; j < 8; j++) {
@@ -130,7 +130,7 @@ void ofApp::draw() {
 			}
 		}
 
-		//draw beta
+		//draw eeg beta
 		for (int i = 0; i < 4; i++) {
 			vector<ofPoint> points;
 			for (int j = 0; j < 8; j++) {
@@ -146,7 +146,7 @@ void ofApp::draw() {
 			}
 		}
 
-		//draw theta
+		//draw eeg theta
 		for (int i = 0; i < 4; i++) {
 			vector<ofPoint> points;
 			for (int j = 0; j < 8; j++) {
@@ -161,6 +161,36 @@ void ofApp::draw() {
 				catch (exception& e) { int x = 0; }
 			}
 		}
+
+		//draw eda fasic
+		vector<ofPoint> fasicPoints;
+		for (int j = 0; j < 8; j++) {
+			ofPoint point = ofPoint(9 * wu + j*wu / 2, 7 * hu - edaFasic[j] * hu *0.7);
+			fasicPoints.push_back(point);
+			ofCircle(point, radius);
+		}
+		for (int i = 0; i < fasicPoints.size(); i++) {
+			try {
+				ofLine(fasicPoints.at(i - 1), fasicPoints.at(i));
+			}
+			catch (exception& e) { int x = 0; }
+		}
+
+		//draw eda tonic
+		vector<ofPoint> tonicPoints;
+		for (int j = 0; j < 8; j++) {
+			ofPoint point = ofPoint(9 * wu + j*wu / 2,  8*hu - edaTonic[j] * hu *0.7);
+			tonicPoints.push_back(point);
+			ofCircle(point, radius);
+		}
+		for (int i = 0; i < tonicPoints.size(); i++) {
+			try {
+				ofLine(tonicPoints.at(i - 1), tonicPoints.at(i));
+			}
+			catch (exception& e) { int x = 0; }
+		}
+		
+		//draw ecg
 	}
 	ofPopMatrix();
 }
