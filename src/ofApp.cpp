@@ -53,7 +53,7 @@ void ofApp::update(){
 				if (sub["ID"].asString() == "eda_fasic") fitEdaData(sub, edaTonic);
 
 				//store ecg values
-				if (sub["ID"].asString() == "ecg_hr") ecg = sub["Values"].asFloat();
+				if (sub["ID"].asString() == "ecg_hr") ecg = sub["Values"][0].asFloat();
 
 			}				
 		}
@@ -112,11 +112,55 @@ void ofApp::draw(){
 		ofDrawBitmapString("tonic", 8 * wu, 8 * hu);		
 
 		ofPushMatrix();		
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 4; j++) {
-				ofCircle((i + 3)*wu, (j + 3) - eegAlpha[i][j] * hu, radius);
+		
+		//draw alpha
+		for (int i = 0; i < 4; i++) {
+			vector<ofPoint> points;
+			for (int j = 0; j < 8; j++) {								
+				ofPoint point = ofPoint(3*wu + j*wu/2, (i + 2)*hu - eegAlpha[j][i] * hu *0.7);
+				points.push_back(point);
+				ofCircle(point, radius);
 			}
-		}		
+			for (int i = 0; i < points.size(); i++) {
+				try {
+					ofLine(points.at(i - 1), points.at(i));
+				}
+				catch (exception& e){int x = 0;}
+			}
+		}
+
+		//draw beta
+		for (int i = 0; i < 4; i++) {
+			vector<ofPoint> points;
+			for (int j = 0; j < 8; j++) {
+				ofPoint point = ofPoint(3 * wu + j*wu / 2, (i + 7)*hu - eegBeta[j][i] * hu *0.7);
+				points.push_back(point);
+				ofCircle(point, radius);
+			}
+			for (int i = 0; i < points.size(); i++) {
+				try {
+					ofLine(points.at(i - 1), points.at(i));
+				}
+				catch (exception& e) { int x = 0; }
+			}
+		}
+
+		//draw theta
+		for (int i = 0; i < 4; i++) {
+			vector<ofPoint> points;
+			for (int j = 0; j < 8; j++) {
+				ofPoint point = ofPoint(8 * wu + j*wu / 2, (i + 2)*hu - eegAlpha[j][i] * hu *0.7);
+				points.push_back(point);
+				ofCircle(point, radius);
+			}
+			for (int i = 0; i < points.size(); i++) {
+				try {
+					ofLine(points.at(i - 1), points.at(i));
+				}
+				catch (exception& e) { int x = 0; }
+			}
+		}
+
 		ofPopMatrix();
 }
 
