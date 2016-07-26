@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	//client.setMessageDelimiter("\TCP");
-	client.setup("192.168.1.81", 5555);
+	client.setup("127.0.0.1", 5000);
 	if (client.isConnected()) cout << "connected to server" << endl;
 	else cout << "connection failed" << endl;
 	started = false;
@@ -11,7 +11,7 @@ void ofApp::setup(){
 	eegBeta = new float*[4];
 	eegTheta = new float*[4];
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 4; i++) {
 		eegAlpha[i] = new float[8];
 		eegBeta[i] = new float[8];
 		eegTheta[i] = new float[8];
@@ -91,7 +91,8 @@ void ofApp::draw() {
 
 	ofDrawBitmapString("EEG", 4 * wu, hu);
 	ofDrawBitmapString("EDA", 10 * wu, 6 * hu);
-	ofDrawBitmapString("ECG  ", 8 * wu, 9 * hu);
+	ofDrawBitmapString("ECG  ", 10 * wu, 9 * hu);
+	ofDrawBitmapString(ecg, 12 * wu, 9*hu );
 
 	ofDrawBitmapString("ch0", 2 * wu, 2 * hu);
 	ofDrawBitmapString("ch1", 2 * wu, 3 * hu);
@@ -118,7 +119,7 @@ void ofApp::draw() {
 		for (int i = 0; i < 4; i++) {
 			vector<ofPoint> points;
 			for (int j = 0; j < 8; j++) {
-				ofPoint point = ofPoint(3 * wu + j*wu / 2, (i + 2)*hu - eegAlpha[j][i] * hu *0.7);
+				ofPoint point = ofPoint(3 * wu + j*wu / 2, (i + 2)*hu - eegAlpha[i][j] * hu * 0.7);
 				points.push_back(point);
 				ofCircle(point, radius);
 			}
@@ -134,7 +135,7 @@ void ofApp::draw() {
 		for (int i = 0; i < 4; i++) {
 			vector<ofPoint> points;
 			for (int j = 0; j < 8; j++) {
-				ofPoint point = ofPoint(3 * wu + j*wu / 2, (i + 7)*hu - eegBeta[j][i] * hu *0.7);
+				ofPoint point = ofPoint(3 * wu + j*wu / 2, (i + 7)*hu - eegBeta[i][j] * hu * 0.7);
 				points.push_back(point);
 				ofCircle(point, radius);
 			}
@@ -150,7 +151,7 @@ void ofApp::draw() {
 		for (int i = 0; i < 4; i++) {
 			vector<ofPoint> points;
 			for (int j = 0; j < 8; j++) {
-				ofPoint point = ofPoint(9 * wu + j*wu / 2, (i + 2)*hu - eegAlpha[j][i] * hu *0.7);
+				ofPoint point = ofPoint(9 * wu + j*wu / 2, (i + 2)*hu - eegAlpha[i][j] * hu *0.7);
 				points.push_back(point);
 				ofCircle(point, radius);
 			}
@@ -190,7 +191,8 @@ void ofApp::draw() {
 			catch (exception& e) { int x = 0; }
 		}
 		
-		//draw ecg
+		
+
 	}
 	ofPopMatrix();
 }
