@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	//client.setMessageDelimiter("\TCP");
-	client.setup("127.0.0.1", 5000);
+	client.setup("192.168.1.81", 5000);
 	if (client.isConnected()) cout << "connected to server" << endl;
 	else cout << "connection failed" << endl;
 	started = false;
@@ -65,9 +65,9 @@ void ofApp::update(){
 }
 
 void ofApp::fitEegData(ofxJSONElement e, float ** m) {
-	for (int i=0; i < 8; i++) {
-		for (int j = 0; j < 4; j++) {
-			m[i][j] = e["Values"][4 * j + i].asFloat();
+	for (int i=0; i < 4; i++) {
+		for (int j = 0; j < 8; j++) {
+			m[i][j] = e["Values"][4 * i + j].asFloat();
 		}		
 	}	
 }
