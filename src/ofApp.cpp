@@ -2,11 +2,14 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	//client.setMessageDelimiter("\TCP");
-	client.setup("192.168.1.81", 5000);
+	client.setMessageDelimiter("\n");
+	client.setup("127.0.0.1", 5000);
+	receivedBytes = 0;
 	if (client.isConnected()) cout << "connected to server" << endl;
 	else cout << "connection failed" << endl;
+	
 	started = false;
+
 	eegAlpha = new float*[4];
 	eegBeta = new float*[4];
 	eegTheta = new float*[4];
@@ -21,25 +24,29 @@ void ofApp::setup(){
 	edaTonic = new float[8];
 
 	ecg = 0;
+
+	buffer = new char[2048];
+	for (int i = 0; i < 2048; i++) {
+		buffer[i] = '.';
+	}
+	writeIndex = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	if (client.isConnected()) {
-				
-		string str = client.receive();
-		
-		ofxJSONElement element = new ofxJSONElement();
+	if (client.isConnected() && started) {
+		vector<ofxJSONElement> elements = receiveMessage();
 
-		if (str!= "" && element.parse(str) && started) {
-			for (Json::ArrayIndex i = 0; i < element["DATA"].size(); i++) {				
-				
+		for (int i = 0; i < elements.size(); i++) {
+			ofxJSONElement element = new ofxJSONElement();
+			element = elements[i];
+			for (Json::ArrayIndex i = 0; i < element["DATA"].size(); i++) {
 				//get element at index i
-				ofxJSONElement sub = element["DATA"][i];
+				ofxJSONElement sub = elements[i]["DATA"][i];
 
 				//display value type and timestamp
 				cout << "received " << sub["ID"].asString() << " at " << sub["Timestamp"].asFloat() << " ";
-				
+
 				//end line
 				cout << endl;
 
@@ -54,14 +61,42 @@ void ofApp::update(){
 
 				//store ecg values
 				if (sub["ID"].asString() == "ecg_hr") ecg = sub["Values"][0].asFloat();
-
-			}				
+			}
 		}
-			
 	}
-	else {
+}
 
+vector<ofxJSONElement> ofApp::receiveMessage() {
+	vector<ofxJSONElement> ret;
+	bool finished = false;
+	int startIndex = 0;
+	int readIndex = 0;	
+	
+	//write received bytes after last written thing
+	int writtenBytes = client.receiveRawBytes(buffer + (writeIndex)* sizeof(char), 700);
+
+	//look for valid JSON strings in buffer and store them in vector
+	while (readIndex <= writeIndex + writtenBytes) { 
+		string s(buffer);
+		string p(s.begin()+startIndex, s.begin() + readIndex);
+		ofxJSONElement element = new ofxJSONElement();
+		if (element.parse(p)) {
+			ret.push_back(element);
+			startIndex = readIndex;
+		}
+		readIndex++;
 	}
+
+	
+	
+	//move remainings to begining of buffer
+	//memcpy(buffer, &buffer[writeIndex], (writtenBytes + writeIndex - startIndex)*sizeof(char));
+	for (int i = writeIndex; i < (writtenBytes + writeIndex); i++) {
+		buffer[i] = buffer[i + startIndex];
+	}
+	writeIndex = writtenBytes - startIndex;
+	for (int i = writeIndex; i < 2048;  i++) buffer[i] = '.';
+	return ret;
 }
 
 void ofApp::fitEegData(ofxJSONElement e, float ** m) {
@@ -202,7 +237,7 @@ void ofApp::sendCommand(string command) {
 		//send command to server
 		string s = "{ \"COMMAND\": \""+ command + "\" }";
 		client.send(s);		
-
+		/*
 		//wait for answer
 		Sleep(1000);
 		s = client.receive();
@@ -225,12 +260,15 @@ void ofApp::sendCommand(string command) {
 			ofLogError("error reading answer from" + command + "request");
 			if (s == "") cout << "server returned empty messsage" << endl;
 		}
-
+		*/
 	}
 }
 
 void ofApp::keyPressed(int key) {
-	if (key == OF_KEY_UP) sendCommand("start");
+	if (key == OF_KEY_UP) {
+		started = true;
+		sendCommand("start");
+	}
 	if (key == OF_KEY_DOWN) sendCommand("stop");
 }
 
