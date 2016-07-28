@@ -40,6 +40,8 @@ void ofApp::update(){
 		for (int i = 0; i < elements.size(); i++) {
 			ofxJSONElement element = new ofxJSONElement();
 			element = elements[i];
+
+			//if data frame
 			for (Json::ArrayIndex i = 0; i < element["DATA"].size(); i++) {
 				//get element at index i
 				ofxJSONElement sub = elements[i]["DATA"][i];
@@ -61,16 +63,26 @@ void ofApp::update(){
 
 				//store ecg values
 				if (sub["ID"].asString() == "ecg_hr") ecg = sub["Values"][0].asFloat();
+				
+			}
+			if (element["STATUS"].asString() == "OK") {
+				//if request accepted
+				started = true;
+				cout << "start request accepted." << endl;
+			}
+			else if (element["STATUS"].asString() == "Error") {
+				//error in the server when receiving the message
+				ofLogError(element["MSG"].asString());
 			}
 		}
-	}
+	}	
 }
 
 vector<ofxJSONElement> ofApp::receiveMessage() {
 	vector<ofxJSONElement> ret;
 	int startIndex = 0;
-	int readIndex = 1;	
-	
+	int readIndex = 0;	
+
 	//write received bytes after last written thing
 	int writtenBytes = client.receiveRawBytes(buffer + (writeIndex)* sizeof(char), 700);
 
@@ -234,38 +246,14 @@ void ofApp::sendCommand(string command) {
 	if (client.isConnected()) {
 		//send command to server
 		string s = "{ \"COMMAND\": \""+ command + "\" }";
-		client.send(s);		
-		/*
-		//wait for answer
-		Sleep(1000);
-		s = client.receive();
-		ofxJSONElement element = new ofxJSONElement(s);
-
-		if (element.parse(s)) {
-			if (element["STATUS"].asString() == "OK") {								
-				//if request accepted
-				if (command == "start") started = true;
-				if (command == "stop") started = false;
-				cout << command << " request accepted." << endl;
-			}
-			else if (element["STATUS"].asString() == "Error") {
-				//error in the server when receiving the message
-				ofLogError(element["MSG"].asString());
-			}
-		}
-		else {
-			//error parsing the server's answer
-			ofLogError("error reading answer from" + command + "request");
-			if (s == "") cout << "server returned empty messsage" << endl;
-		}
-		*/
+		client.send(s);										
 	}
 }
 
 void ofApp::keyPressed(int key) {
 	if (key == OF_KEY_UP) {
-		started = true;
 		sendCommand("start");
+		started = true;
 	}
 	if (key == OF_KEY_DOWN) sendCommand("stop");
 }
