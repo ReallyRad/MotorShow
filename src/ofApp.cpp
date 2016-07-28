@@ -30,6 +30,7 @@ void ofApp::setup(){
 		buffer[i] = '.';
 	}
 	writeIndex = 0;
+	//ofSetFrameRate(60);
 }
 
 //--------------------------------------------------------------
@@ -39,13 +40,14 @@ void ofApp::update(){
 
 		for (int i = 0; i < elements.size(); i++) {
 			ofxJSONElement element = new ofxJSONElement();
+
 			element = elements[i];
+			//cout << "before accessing elements[DATA]" << endl;
 
 			//if data frame
 			for (Json::ArrayIndex i = 0; i < element["DATA"].size(); i++) {
 				//get element at index i
 				ofxJSONElement sub = elements[i]["DATA"][i];
-
 				//display value type and timestamp
 				cout << "received " << sub["ID"].asString() << " at " << sub["Timestamp"].asFloat() << " ";
 
@@ -82,32 +84,35 @@ vector<ofxJSONElement> ofApp::receiveMessage() {
 	vector<ofxJSONElement> ret;
 	int startIndex = 0;
 	int readIndex = 0;	
-
+	//cout << "in read" << endl;
 	//write received bytes after last written thing
 	int writtenBytes = client.receiveRawBytes(buffer + (writeIndex)* sizeof(char), 700);
+	if (writtenBytes > 0) {
+		//look for valid JSON strings in buffer and store them in vector
+		while (readIndex <= writeIndex + writtenBytes) {
+			string s(buffer);
+			string p(s.begin() + startIndex, s.begin() + readIndex);
 
-	//look for valid JSON strings in buffer and store them in vector
-	while (readIndex <= writeIndex + writtenBytes) { 
-		string s(buffer);
-		string p(s.begin()+startIndex, s.begin() + readIndex);
-		
-		ofxJSONElement element = new ofxJSONElement();
-		if (element.parse(p)) {
-			ret.push_back(element);
-			startIndex = readIndex;
+			ofxJSONElement element = new ofxJSONElement();
+			if (element.parse(p)) {
+				ret.push_back(element);
+				startIndex = readIndex;
+			}
+			readIndex++;
 		}
-		readIndex++;
-	}	
-	
-	//move remainings to begining of buffer
-	//for (int i = writeIndex; i < (writtenBytes + writeIndex); i++) buffer[i] = buffer[i + startIndex];
-	
-	for (int i = 0; i < (writtenBytes + writeIndex - startIndex); i++) buffer[i] = buffer[i + startIndex];
-	//set index at which to write next time
-	writeIndex += writtenBytes - startIndex;
 
-	//clear the rest of the buffer just in case
-	for (int i = writeIndex; i < 2048;  i++) buffer[i] = '.';
+		//move remainings to begining of buffer
+		//for (int i = writeIndex; i < (writtenBytes + writeIndex); i++) buffer[i] = buffer[i + startIndex];
+
+		for (int i = 0; i < (writtenBytes + writeIndex - startIndex); i++) buffer[i] = buffer[i + startIndex];
+		//set index at which to write next time
+		writeIndex += writtenBytes - startIndex;
+
+		//clear the rest of the buffer just in case
+		string a(buffer);
+		//cout << "buffer " << a << endl;
+		for (int i = writeIndex; i < 2048; i++) buffer[i] = '.';
+	}
 	return ret;
 }
 
@@ -127,6 +132,12 @@ void ofApp::fitEdaData(ofxJSONElement e, float * d) {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+
+	//display framerate as window title
+	std::stringstream strm;
+	strm << "fps: " << ofGetFrameRate();
+	ofSetWindowTitle(strm.str());
+
 
 	float hu = ofGetHeight() / 10;
 	float wu = ofGetWidth() / 13;
