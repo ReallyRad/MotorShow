@@ -68,9 +68,8 @@ void ofApp::update(){
 
 vector<ofxJSONElement> ofApp::receiveMessage() {
 	vector<ofxJSONElement> ret;
-	bool finished = false;
 	int startIndex = 0;
-	int readIndex = 0;	
+	int readIndex = 1;	
 	
 	//write received bytes after last written thing
 	int writtenBytes = client.receiveRawBytes(buffer + (writeIndex)* sizeof(char), 700);
@@ -79,22 +78,23 @@ vector<ofxJSONElement> ofApp::receiveMessage() {
 	while (readIndex <= writeIndex + writtenBytes) { 
 		string s(buffer);
 		string p(s.begin()+startIndex, s.begin() + readIndex);
+		
 		ofxJSONElement element = new ofxJSONElement();
 		if (element.parse(p)) {
 			ret.push_back(element);
 			startIndex = readIndex;
 		}
 		readIndex++;
-	}
-
-	
+	}	
 	
 	//move remainings to begining of buffer
-	//memcpy(buffer, &buffer[writeIndex], (writtenBytes + writeIndex - startIndex)*sizeof(char));
-	for (int i = writeIndex; i < (writtenBytes + writeIndex); i++) {
-		buffer[i] = buffer[i + startIndex];
-	}
-	writeIndex = writtenBytes - startIndex;
+	//for (int i = writeIndex; i < (writtenBytes + writeIndex); i++) buffer[i] = buffer[i + startIndex];
+	
+	for (int i = 0; i < (writtenBytes + writeIndex - startIndex); i++) buffer[i] = buffer[i + startIndex];
+	//set index at which to write next time
+	writeIndex += writtenBytes - startIndex;
+
+	//clear the rest of the buffer just in case
 	for (int i = writeIndex; i < 2048;  i++) buffer[i] = '.';
 	return ret;
 }
@@ -224,9 +224,7 @@ void ofApp::draw() {
 				ofLine(tonicPoints.at(i - 1), tonicPoints.at(i));
 			}
 			catch (exception& e) { int x = 0; }
-		}
-		
-		
+		}				
 
 	}
 	ofPopMatrix();
