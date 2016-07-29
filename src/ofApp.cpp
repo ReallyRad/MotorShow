@@ -16,12 +16,17 @@ void ofApp::setup(){
 
 	for (int i = 0; i < 4; i++) {
 		eegAlpha[i] = new float[8];
+		for (int j = 0; j < 8; j++) { eegAlpha[i][j] = 0; }
 		eegBeta[i] = new float[8];
+		for (int j = 0; j < 8; j++) { eegBeta[i][j] = 0; }
 		eegTheta[i] = new float[8];
+		for (int j = 0; j < 8; j++) { eegTheta[i][j] = 0; }
 	}
 
 	edaFasic = new float[8];
+	for (int i = 0; i < 8; i++) edaFasic[i] = 0;
 	edaTonic = new float[8];
+	for (int i = 0; i < 8; i++) edaTonic[i] = 0;
 
 	ecg = 0;
 
@@ -29,8 +34,8 @@ void ofApp::setup(){
 	for (int i = 0; i < 2048; i++) {
 		buffer[i] = '.';
 	}
+
 	writeIndex = 0;
-	//ofSetFrameRate(60);
 }
 
 //--------------------------------------------------------------
@@ -102,15 +107,11 @@ vector<ofxJSONElement> ofApp::receiveMessage() {
 		}
 
 		//move remainings to begining of buffer
-		//for (int i = writeIndex; i < (writtenBytes + writeIndex); i++) buffer[i] = buffer[i + startIndex];
-
 		for (int i = 0; i < (writtenBytes + writeIndex - startIndex); i++) buffer[i] = buffer[i + startIndex];
 		//set index at which to write next time
 		writeIndex += writtenBytes - startIndex;
 
-		//clear the rest of the buffer just in case
-		string a(buffer);
-		//cout << "buffer " << a << endl;
+		//clear the rest of the buffer
 		for (int i = writeIndex; i < 2048; i++) buffer[i] = '.';
 	}
 	return ret;
@@ -132,13 +133,6 @@ void ofApp::fitEdaData(ofxJSONElement e, float * d) {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-
-	//display framerate as window title
-	std::stringstream strm;
-	strm << "fps: " << ofGetFrameRate();
-	ofSetWindowTitle(strm.str());
-
-
 	float hu = ofGetHeight() / 10;
 	float wu = ofGetWidth() / 13;
 	int radius = 5;
