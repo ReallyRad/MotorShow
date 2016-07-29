@@ -31,6 +31,7 @@ public:
 	float ** eegBeta;
 	float ** eegTheta;
 
+	ofBuffer log;
 	char* buffer;
 	int writeIndex;
 

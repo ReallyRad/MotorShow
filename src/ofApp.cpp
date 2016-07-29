@@ -30,6 +30,8 @@ void ofApp::setup(){
 
 	ecg = 0;
 
+	log = * (new ofBuffer());
+
 	buffer = new char[2048];
 	for (int i = 0; i < 2048; i++) {
 		buffer[i] = '.';
@@ -47,7 +49,6 @@ void ofApp::update(){
 			ofxJSONElement element = new ofxJSONElement();
 
 			element = elements[i];
-			//cout << "before accessing elements[DATA]" << endl;
 
 			//if data frame
 			for (Json::ArrayIndex i = 0; i < element["DATA"].size(); i++) {
@@ -102,6 +103,9 @@ vector<ofxJSONElement> ofApp::receiveMessage() {
 			if (element.parse(p)) {
 				ret.push_back(element);
 				startIndex = readIndex;
+				log.append("C ");
+				log.append(p);
+				log.append("\n");
 			}
 			readIndex++;
 		}
@@ -264,5 +268,6 @@ void ofApp::keyPressed(int key) {
 }
 
 void ofApp::exit() {
+	ofBufferToFile("log.txt", log);
 	sendCommand("stop");
 }
