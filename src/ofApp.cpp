@@ -2,9 +2,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	client.setMessageDelimiter("\n");
+	//client.setMessageDelimiter("");
+	//client.
 	client.setup("127.0.0.1", 5000);
-	receivedBytes = 0;
 	if (client.isConnected()) cout << "connected to server" << endl;
 	else cout << "connection failed" << endl;
 	
@@ -257,7 +257,7 @@ void ofApp::sendCommand(string command) {
 	if (client.isConnected()) {
 		//send command to server
 		string s = "{ \"COMMAND\": \""+ command + "\" }";
-		client.send(s);										
+		client.sendRaw(s);										
 	}
 }
 

@@ -19,7 +19,7 @@ public:
 	void exit();
 		
 	ofxTCPClient client;
-	int receivedBytes;
+	
 	ofxJSONElement json;
 	
 	bool started;	
